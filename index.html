@@ -17,26 +17,38 @@
 						<li key={name}>
 							<span>{name}</span>
 							<button onClick={() => props.onRemoveFriend(name)}>Remove</button>
+							<button onClick={() => props.onActivityChange(activeStatus)}>{props.activeStatus}</button>
 						</li>
 					))}
 				</ul>
 			)
-		}
+		}	
 
 		class App extends React.Component {
 			constructor(props){
 				super(props)
 
 				this.state = {
-					friends: ['Jordyn', 'Emily', 'Jacob']
+					activeFriends: ['Jordyn', 'Emily', 'Jacob'],
+					inactiveFriends: ['Jolene'],
+					input: ''
 				}
-
+				this.handleRemoveFriend = this.handleRemoveFriend.bind(this)
+				this.handleAddFriend = this.handleAddFriend.bind(this)
+				this.handleClearAll = this.handleClearAll.bind(this)
+				this.updateInput = this.updateInput.bind(this)
 			}
 
 			handleAddFriend() {
-
+				this.setState((prevState) => {
+					return {
+						activeFriends: prevState.activeFriends.concat([this.state.input]),
+						input: ''
+					}
+				})
 			}
 
+			// need logic for active and inactive friends
 			handleRemoveFriend(name) {
 				this.setState((currentState) => {
 					return {
@@ -45,13 +57,61 @@
 				})
 			}
 
+			handleClearAll() {
+				this.setState({
+					activeFriends: [],
+					inactiveFriends: []
+				})
+			}
+
+			// should handle active and deactive
+			// take in a bool of specifying current status 
+				// if status is active, then move to deactive, vice versa
+			handleActivityChange(currentStatus) {
+				if (currentStatus) {
+					// move to deac
+					this.setState((currentState) => {
+						return {
+						}
+					})
+				} else {
+					// move to active
+				}
+			}
+			updateInput(e) {
+				const value = e.target.value
+				this.setState({
+					input: value	
+				})
+			}
+
 			render() {
 				return (
 					<div>
+						<input 
+							type='text'
+							placeholder='new friend'
+							value={this.state.input}
+							onChange={this.updateInput}
+						/>
+						<button onClick={this.handleAddFriend}>Submit</button>
+						<br></br>
+						<button onClick={this.handleClearAll}>clear all</button>
+						<h1>Active Friends</h1>
 						<FriendsList 
-							list={this.state.friends}
+							list={this.state.activeFriends}
 							onRemoveFriend={this.handleRemoveFriend}
-					 	/> 
+							activeFriend={true}
+							activeStatus={'deactivate'}
+					 	/>
+						<h1>Inactive Friends</h1>
+					 	<FriendsList 
+							list={this.state.inactiveFriends}
+							onRemoveFriend={this.handleRemoveFriend}
+							onActivityChange={this.handleActivityChange}
+							activeFriend={false}
+							activeStatus={'activate'}
+					 	/>  
 				 	</div>
 				)
 			}
