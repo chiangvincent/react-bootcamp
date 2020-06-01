@@ -33,6 +33,41 @@
     }
   </script>
   <script type='text/babel'>
+    class Loading extends React.Component {
+      constructor(props) {
+        super(props)
+        this.state = {
+          text: 'Loading'
+        }
+      }
+
+      componentDidMount() {
+        const stopper = 'Loading...'
+        this.interval = window.setInterval(() => {
+          if (this.state.text === stopper) {
+            this.setState({
+              text: 'Loading'
+            })
+          } else {
+            console.log("inside")
+            this.setState((currState) => {
+              return {
+                text: currState.text + '.'
+              }
+            })
+          }
+        }, 300)
+      }
+
+      componentWillUnmount() {
+        window.clearInterval(this.interval)
+      }
+
+      render() {
+        return <p>{this.state.text}</p>
+      }
+    }
+
     function ActiveFriends (props) {
       return (
         <div>
@@ -49,6 +84,7 @@
         </div>
       )
     }
+
     function InactiveFriends (props) {
       return (
         <div>
@@ -64,6 +100,7 @@
         </div>
       )
     }
+
     class App extends React.Component {
       constructor(props) {
         super(props)
@@ -131,8 +168,9 @@
       }
       render() {
         if (this.state.loading) {
-          return <h1>LOADING...</h1>
+          return <Loading />
         }
+
         return (
           <div>
             <input
