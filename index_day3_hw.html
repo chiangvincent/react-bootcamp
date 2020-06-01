@@ -27,6 +27,7 @@
 
   <script type='text/babel'>
     class Loading extends React.Component {
+
       constructor(props) {
         super(props);
 
@@ -34,6 +35,7 @@
           text: 'Loading'
         };
       }
+
       componentDidMount() {
         const stopper = this.state.text + '...';
 
@@ -43,9 +45,11 @@
             : this.setState((prevState) => ({ text: prevState.text + '.' }))
         }, 300)
       }
+
       componentWillUnmount() {
         window.clearInterval(this.interval);
       }
+
       render() {
         return (
           <p>
@@ -70,6 +74,10 @@
       )
     }
 
+    function DisplayRepos(props) {
+      return <h2>work in progress </h2>
+    }
+
     class App extends React.Component {
       constructor(props) {
         super(props)
@@ -78,14 +86,33 @@
         
         this.state = {
           currentLanguage: 'all',
+          currentTopRepos: [],
           loading: true
         }
       }
 
+      componentDidMount() {
+        // fetching the top 50 repos
+        API.fetchPopularRepos(this.state.currentLanguage).then((langList) => {
+          this.setState({
+            currentTopRepos: langList.slice(0, 50),
+            loading: false
+          })
+          // console.log(langList.slice(0, 50))
+          // console.log(this.currentTopRepos)
+        })
+      }
+
       render() {
+        if (this.state.loading) {
+          return <Loading />
+        }
+
         return (
           <div>
              <DisplayLanguages languageList={this.languages}/>
+             <h2>{this.state.currentLanguage}</h2>
+             <DisplayRepos repoList={this.state.currentTopRepos} />
           </div>
         )
       }
