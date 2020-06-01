@@ -8,7 +8,30 @@
 </head>
 <body>
   <div id='app'></div>
-
+  <script>
+    window.API = {
+      fetchFriends() {
+        return new Promise((res, rej) => {
+          const friends = 
+          [
+            {
+              name: 'Jordyn',
+              active: true,
+            },
+            {
+              name: 'Mikenzi',
+              active: true,
+            },
+            {
+              name: 'Jake',
+              active: false
+            }
+          ]
+          setTimeout(() => res(friends), 2000)
+        })
+      }
+    }
+  </script>
   <script type='text/babel'>
     function ActiveFriends (props) {
       return (
@@ -45,27 +68,31 @@
       constructor(props) {
         super(props)
         this.state = {
-          friends: [
-            {
-              name: 'Jordyn',
-              active: true,
-            },
-            {
-              name: 'Mikenzi',
-              active: true,
-            },
-            {
-              name: 'Jake',
-              active: false
-            }
-          ],
+          friends: [],
           input: '',
+          loading: true
         }
         this.handleRemoveFriend = this.handleRemoveFriend.bind(this)
         this.updateInput = this.updateInput.bind(this)
         this.handleAddFriend = this.handleAddFriend.bind(this)
         this.handleToggleFriend = this.handleToggleFriend.bind(this)
       }
+
+      componentDidMount() {
+        console.log('componentDidMount')
+        API.fetchFriends().then((friends) => {
+          this.setState({
+            friends: friends,
+            loading: false
+          })
+          console.log('FRIENDS', friends)
+        })
+      }
+
+      componentDidUpdate() {
+        console.log('updated')
+      }
+
       handleAddFriend() {
         this.setState((currentState) => {
           return {
@@ -103,6 +130,9 @@
         })
       }
       render() {
+        if (this.state.loading) {
+          return <h1>LOADING...</h1>
+        }
         return (
           <div>
             <input
