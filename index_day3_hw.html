@@ -75,7 +75,23 @@
     }
 
     function DisplayRepos(props) {
-      return <h2>work in progress </h2>
+      // need href link, @handle, number of stars
+      // html_url, name (doesn't have handle), watchers_count
+      var repos = props.repoList
+      console.log(repos)
+      return (
+        <ul>
+          {repos.map((repo) => (
+            <li key={repo.name} style={{display: "inline-block"}}>
+              <ul>
+                <li key={repo.html_url}><a href={repo.html_url}>{repo.name}</a></li>
+                <li key={repo.name}>@{repo.name}</li>
+                <li key={repo.id}>{repo.watchers_count} stars</li>
+              </ul>
+            </li>
+          ))}
+        </ul>
+      )
     }
 
     class App extends React.Component {
