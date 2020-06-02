@@ -65,7 +65,7 @@
         <ul>
           {languages.map((language) => (
             <li key={language}>
-              <button>
+              <button onClick={() =>{props.languageToggler(language)}}>
                 {language}
               </button>
             </li>
@@ -78,7 +78,6 @@
       // need href link, @handle, number of stars
       // html_url, name (doesn't have handle), watchers_count
       var repos = props.repoList
-      console.log(repos)
       return (
         <ul>
           {repos.map((repo) => (
@@ -103,21 +102,47 @@
         this.state = {
           currentLanguage: 'all',
           currentTopRepos: [],
+          previousLanguage: '',
           loading: true
+        }
+        this.handleLanguageToggle = this.handleLanguageToggle.bind(this)
+      }
+
+      handleLanguageToggle(newLanguage) {
+        var prevLanguage = this.state.currentLanguage
+        this.setState({
+          currentLanguage: newLanguage,
+          previousLanguage: prevLanguage,
+          loading: true
+        })
+      }
+
+      componentDidUpdate (prevState) {
+        const currLanguage = this.state.currentLanguage
+        const prevLanguage = this.state.previousLanguage
+        // console.log(currLanguage)
+        // console.log(prevLanguage)
+        if (this.state.loading) {
+          API.fetchPopularRepos(currLanguage).then((langList) => {
+            this.setState({
+              currentTopRepos: langList.slice(0, 50),
+              loading: false 
+            })
+          })
         }
       }
 
       componentDidMount() {
+        console.log('inside component did mount')
         // fetching the top 50 repos
         API.fetchPopularRepos(this.state.currentLanguage).then((langList) => {
           this.setState({
             currentTopRepos: langList.slice(0, 50),
             loading: false
           })
-          // console.log(langList.slice(0, 50))
-          // console.log(this.currentTopRepos)
         })
       }
+
 
       render() {
         if (this.state.loading) {
@@ -126,7 +151,9 @@
 
         return (
           <div>
-             <DisplayLanguages languageList={this.languages}/>
+             <DisplayLanguages 
+                languageList={this.languages}
+                languageToggler={this.handleLanguageToggle} />
              <h2>{this.state.currentLanguage}</h2>
              <DisplayRepos repoList={this.state.currentTopRepos} />
           </div>
